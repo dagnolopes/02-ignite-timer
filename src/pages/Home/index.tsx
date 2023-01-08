@@ -36,6 +36,7 @@ interface Cycle {
   task: string;
   minutesAmount: number;
   startDate: Date;
+  interruptedDate?: Date;
 }
 
 // eslint-disable-next-line no-undef
@@ -82,7 +83,7 @@ export function Home() {
     };
   }, [activeCycle]);
 
-  function hableCreateNewCycle(data: NewCycleFormData) {
+  function handleCreateNewCycle(data: NewCycleFormData) {
     const id = String(new Date().getTime());
 
     const newCycle: Cycle = {
@@ -98,6 +99,20 @@ export function Home() {
 
     console.log(data);
     reset();
+  }
+
+  function handleInterruptCycle() {
+    setCycles(
+      cycles.map((cycle) => {
+        if (cycle.id === activeCylceId) {
+          return { ...cycle, interruptedDate: new Date() };
+        } else {
+          return cycle;
+        }
+      })
+    );
+
+    setActiveCycleId(null);
   }
 
   const totalSeconds = activeCycle ? activeCycle.minutesAmount * 60 : 0;
@@ -119,7 +134,7 @@ export function Home() {
 
   return (
     <HomeContainer>
-      <form action="" onSubmit={handleSubmit(hableCreateNewCycle)}>
+      <form action="" onSubmit={handleSubmit(handleCreateNewCycle)}>
         <FormContainer>
           <label htmlFor="task">Vou trabalhar em</label>
           <TaskInput
@@ -146,6 +161,7 @@ export function Home() {
             step={5}
             min={5}
             max={60}
+            disabled={!!activeCycle}
             {...register("minutesAmount", { valueAsNumber: true })}
           />
 
@@ -160,7 +176,7 @@ export function Home() {
           <span>{seconds[1]}</span>
         </CountdownContainer>
         {activeCycle ? (
-          <StopCountdownButton type="button">
+          <StopCountdownButton onClick={handleInterruptCycle} type="button">
             <HandPalm size={24} />
             Parar
           </StopCountdownButton>
