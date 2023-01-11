@@ -183,7 +183,6 @@ export function Home() {
             disabled={!!activeCycle}
             {...register("minutesAmount", { valueAsNumber: true })}
           />
-
           <span>minutos.</span>
         </FormContainer>
 
